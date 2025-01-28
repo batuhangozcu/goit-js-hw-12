@@ -12,8 +12,8 @@ import "izitoast/dist/css/iziToast.min.css";
 
 import axios, { isCancel, AxiosError } from "axios";
 
+const searchBar = document.querySelector(".searchBar")
 const input = document.getElementById("input");
-const button = document.getElementById("submitButton");
 const lists = document.querySelector(".lists");
 const loadMore = document.getElementById("loadMore");
 const loaderContainer = document.querySelector(".loaderDiv");
@@ -30,10 +30,10 @@ let page = 1;
 
 loadMore.style.display = "none";
 
-button.addEventListener("click", async (e) => {
+searchBar.addEventListener("submit", async (e) => {
   loaderContainer.innerHTML = `<span class="loader"></span>`;
   lists.innerHTML = "";
-  e.preventDefault;
+  e.preventDefault();
   params.set("q", input.value);
   try {
     const images = await fetchImages();
