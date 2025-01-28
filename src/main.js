@@ -17,7 +17,6 @@ const button = document.getElementById("submitButton");
 const lists = document.querySelector(".lists");
 const loadMore = document.getElementById("loadMore");
 const loaderContainer = document.querySelector(".loaderDiv");
-// const imageHeight = document.querySelector(".cards").getBoundingClientRect();
 
 const params = new URLSearchParams({
   key: "48294638-370103394c700755fbc6c4620",
