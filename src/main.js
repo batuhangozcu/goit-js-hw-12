@@ -16,6 +16,8 @@ const input = document.getElementById("input");
 const button = document.getElementById("submitButton");
 const lists = document.querySelector(".lists");
 const loadMore = document.getElementById("loadMore");
+const loaderContainer = document.querySelector(".loaderDiv");
+// const imageHeight = document.querySelector(".cards").getBoundingClientRect();
 
 const params = new URLSearchParams({
   key: "48294638-370103394c700755fbc6c4620",
@@ -30,11 +32,10 @@ let page = 1;
 loadMore.style.display = "none";
 
 button.addEventListener("click", async (e) => {
-  lists.innerHTML = `<span class="loader"></span>`;
+  loaderContainer.innerHTML = `<span class="loader"></span>`;
+  lists.innerHTML = "";
   e.preventDefault;
   params.set("q", input.value);
-  params.set("page", page);
-  page += 1;
   try {
     const images = await fetchImages();
     renderImages(images);
@@ -56,6 +57,7 @@ function renderImages(images) {
         "Sorry, there are no images matching your search query. Please try again!",
     });
   }
+
   const markup = images.hits
     .map((photo) => {
       return `<li class="list">
@@ -78,14 +80,12 @@ function renderImages(images) {
        </li>`;
     })
     .join("");
-  lists.innerHTML = "";
+  loaderContainer.innerHTML = "";
   lists.insertAdjacentHTML("beforeend", markup);
-  if (page >= 1) {
+
+  if ((page > 1, images.total !== 0)) {
     // loadMore.textContent = "Load More";
     loadMore.style.display = "flex";
-    loadMore.addEventListener("click", () => {
-      lists.insertAdjacentHTML("beforeend", markup);
-    });
   }
   lists.addEventListener("click", (e) => {
     e.preventDefault();
@@ -93,8 +93,33 @@ function renderImages(images) {
       return;
     }
   });
-  new SimpleLightbox(".cards a", {
+
+  const lightBox = new SimpleLightbox(".cards a", {
     captionsData: "alt",
     captionDelay: 250,
-  }).refresh();
+  });
+  lightBox.refresh();
 }
+
+loadMore.addEventListener("click", async () => {
+  try {
+    page += 1;
+    params.set("page", page);
+    const images = await fetchImages();
+    renderImages(images);
+    if (images.totalHits < page * 40) {
+      loadMore.style.display = "none";
+      iziToast.info({
+        position: "topRight",
+        message: "We're sorry, but you've reached the end of search results.",
+      });
+    }
+    const imageSize = document.querySelector(".cards").getBoundingClientRect();
+    window.scrollBy({
+      behavior: "smooth",
+      top: imageSize.height * 3,
+    });
+  } catch (error) {
+    alert(error);
+  }
+});
